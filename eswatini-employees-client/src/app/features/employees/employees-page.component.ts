@@ -23,6 +23,8 @@ export class EmployeesPageComponent {
   maxAge: number | null = null;
   sortBy: EmployeeSort = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
+  readonly pageSize = 5;
+  currentPage = 1;
   draft: EmployeeInput = this.emptyDraft();
   editingId = '';
   loading = true;
@@ -42,7 +44,7 @@ export class EmployeesPageComponent {
     return [...new Set(this.employees.map((employee) => employee.position))].sort();
   }
 
-  get visibleEmployees(): Employee[] {
+  get filteredEmployees(): Employee[] {
     const query = this.query.trim().toLowerCase();
     return this.employees
       .filter((employee) => !query || `${employee.name} ${employee.position}`.toLowerCase().includes(query))
@@ -57,10 +59,23 @@ export class EmployeesPageComponent {
       });
   }
 
+  get visibleEmployees(): Employee[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredEmployees.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredEmployees.length / this.pageSize));
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+
   loadEmployees(companyId = this.company?.id ?? ''): void {
     this.loading = true;
     this.api.getEmployees(companyId).subscribe({
-      next: (employees) => { this.employees = employees; this.loading = false; },
+      next: (employees) => { this.employees = employees; this.currentPage = 1; this.loading = false; },
       error: () => { this.error = 'Employees could not be loaded.'; this.loading = false; }
     });
   }
@@ -68,6 +83,13 @@ export class EmployeesPageComponent {
   changeSort(sortBy: EmployeeSort): void {
     if (this.sortBy === sortBy) this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     else { this.sortBy = sortBy; this.sortDirection = 'asc'; }
+    this.currentPage = 1;
+  }
+
+  resetPage(): void { this.currentPage = 1; }
+
+  goToPage(page: number): void {
+    this.currentPage = Math.min(Math.max(page, 1), this.totalPages);
   }
 
   startEdit(employee: Employee): void {
