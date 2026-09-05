@@ -1,11 +1,13 @@
-# 🚀 EswatiniEmployees — Duende IdentityServer & ASP.NET Core OAuth Solution
+# 🚀 EswatiniEmployees — Angular + Duende IdentityServer OAuth Solution
 
 [![.NET](https://img.shields.io/badge/.NET-8.0%2B-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Duende IdentityServer](https://img.shields.io/badge/Auth-Duende_IdentityServer-000000?logo=security&logoColor=white)](https://duendesoftware.com/)
 [![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-CC2927?logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server/)
+[![Angular](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A comprehensive, production-ready OAuth 2.0 and OpenID Connect (OIDC) implementation using **Duende IdentityServer** and **ASP.NET Core Identity**. This repository provides a complete microservices-style authentication setup, including an Identity Provider (IDP), a secured Web API, and a consuming Web Client relying on the Authorization Code flow with PKCE.
+A comprehensive OAuth 2.0 and OpenID Connect (OIDC) implementation using **Duende IdentityServer**, **ASP.NET Core Identity**, and an **Angular 19** client. The primary browser application is the Angular single-page app in `eswatini-employees-client`, written in TypeScript and using `oidc-client-ts` with the Authorization Code flow and PKCE to authenticate users and call the secured ASP.NET Web API. An optional ASP.NET Core client is also included for server-rendered client scenarios.
 
 ---
 
@@ -25,7 +27,8 @@ A comprehensive, production-ready OAuth 2.0 and OpenID Connect (OIDC) implementa
 * 🌐 **External Identity Providers:** Pre-configured Google Authentication integration.
 * 📧 **Email Service Verification:** Built-in email sender for account confirmation and password resets.
 * 🗄️ **Entity Framework Core:** Operational and Configuration data stores for IdentityServer.
-* 🏗️ **Multi-Project Architecture:** Clean separation of IDP, Client, API, and Email services.
+* 🅰️ **Angular 19 Client:** TypeScript single-page application in `eswatini-employees-client` using `oidc-client-ts` and PKCE.
+* 🏗️ **Multi-Project Architecture:** Clean separation of IDP, Angular client, optional ASP.NET client, API, and Email services.
 
 ---
 
