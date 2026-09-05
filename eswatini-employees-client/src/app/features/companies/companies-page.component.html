@@ -1,62 +1,6 @@
-<section class="page-heading">
-  <div><p class="eyebrow">Operations</p><h1>Companies & employees</h1></div>
-  <button class="outline-button" type="button" (click)="loadCompanies()" [disabled]="loading">Refresh</button>
-</section>
+<section class="page-heading"><div><p class="eyebrow">Directory</p><h1>Companies</h1><p class="muted">Browse organizations and open a company workspace.</p></div><button class="outline-button" type="button" (click)="loadCompanies()" [disabled]="loading">Refresh</button></section>
 @if (notice) { <section class="notice">{{ notice }}</section> }
-@if (loading) {
-  <section class="status-panel"><span class="spinner"></span> Loading companies...</section>
-} @else if (error) {
-  <section class="alert">{{ error }}</section>
-} @else {
-  <div class="workspace">
-    <section class="panel company-panel">
-      <div class="panel-heading"><div><p class="eyebrow">Directory</p><h2>Companies</h2></div><span class="count">{{ companies.length }}</span></div>
-      @if (companies.length === 0) {
-        <p class="muted">No companies were returned by the API.</p>
-      } @else {
-        <div class="company-list">
-          @for (company of companies; track company.id) {
-            <button class="company-row" [class.selected]="selectedCompany?.id === company.id" type="button" (click)="selectCompany(company)">
-              <span><strong>{{ company.name }}</strong><small>{{ company.fullAddress }}</small></span>
-              <span class="row-arrow">&rarr;</span>
-            </button>
-          }
-        </div>
-      }
-
-      <form class="form-stack compact-form" (ngSubmit)="saveCompany()">
-        <h3>{{ editingCompanyId ? 'Edit company' : 'Add company' }}</h3>
-        <label>Name<input name="companyName" [(ngModel)]="companyDraft.name" required maxlength="60"></label>
-        <label>Address<input name="companyAddress" [(ngModel)]="companyDraft.address" required maxlength="60"></label>
-        <label>Country<input name="companyCountry" [(ngModel)]="companyDraft.country"></label>
-        <div class="form-actions"><button class="primary-button" type="submit" [disabled]="saving">{{ editingCompanyId ? 'Update company' : 'Create company' }}</button>@if (editingCompanyId) {<button class="text-button" type="button" (click)="cancelCompanyEdit()">Cancel</button>}</div>
-      </form>
-    </section>
-
-    <section class="panel detail-panel">
-      @if (!selectedCompany) {
-        <div class="empty-panel"><p class="eyebrow">Select a company</p><h2>Choose a company to manage its employees.</h2><p class="muted">Create, edit, or delete companies from the directory.</p></div>
-      } @else {
-        <div class="panel-heading"><div><p class="eyebrow">{{ selectedCompany.country }}</p><h2>{{ selectedCompany.name }}</h2><p class="muted">{{ selectedCompany.fullAddress }}</p></div><div class="record-actions"><button class="outline-button" type="button" (click)="startCompanyEdit(selectedCompany)">Edit</button><button class="danger-button" type="button" (click)="deleteCompany(selectedCompany)" [disabled]="saving">Delete</button></div></div>
-        @if (loadingEmployees) {
-          <section class="status-panel"><span class="spinner"></span> Loading employees...</section>
-        } @else {
-          <div class="employee-heading"><h3>Employees <span class="count">{{ employees.length }}</span></h3></div>
-          @if (employees.length) {
-            <div class="table-shell"><table><thead><tr><th>Name</th><th>Age</th><th>Position</th><th>Actions</th></tr></thead><tbody>
-              @for (employee of employees; track employee.id) {
-                <tr><td>{{ employee.name }}</td><td>{{ employee.age }}</td><td>{{ employee.position }}</td><td class="actions"><button class="text-button" type="button" (click)="startEmployeeEdit(employee)">Edit</button><button class="text-button danger-text" type="button" (click)="deleteEmployee(employee)" [disabled]="saving">Delete</button></td></tr>
-              }
-            </tbody></table></div>
-          } @else { <p class="muted">No employees are assigned to this company.</p> }
-
-          <form class="form-stack employee-form" (ngSubmit)="saveEmployee()">
-            <h3>{{ editingEmployeeId ? 'Edit employee' : 'Add employee' }}</h3>
-            <div class="form-grid"><label>Name<input name="employeeName" [(ngModel)]="employeeDraft.name" required maxlength="30"></label><label>Age<input name="employeeAge" [(ngModel)]="employeeDraft.age" type="number" min="18" required></label><label>Position<input name="employeePosition" [(ngModel)]="employeeDraft.position" required maxlength="20"></label></div>
-            <div class="form-actions"><button class="primary-button" type="submit" [disabled]="saving">{{ editingEmployeeId ? 'Update employee' : 'Create employee' }}</button>@if (editingEmployeeId) {<button class="outline-button" type="button" (click)="patchEmployee()" [disabled]="saving">Save as patch</button><button class="text-button" type="button" (click)="cancelEmployeeEdit()">Cancel</button>}</div>
-          </form>
-        }
-      }
-    </section>
-  </div>
-}
+@if (error) { <section class="alert">{{ error }}</section> }
+<section class="panel create-panel"><form (ngSubmit)="createCompany()"><h2>Add a company</h2><div class="form-grid"><label>Name<input name="name" [(ngModel)]="draft.name" maxlength="60" required></label><label>Address<input name="address" [(ngModel)]="draft.address" maxlength="60" required></label><label>Country<input name="country" [(ngModel)]="draft.country"></label><button class="primary-button" type="submit" [disabled]="saving">Create company</button></div></form></section>
+<section class="toolbar"><label class="search"><span>Search directory</span><input [(ngModel)]="query" placeholder="Search by company or address"></label><strong>{{ visibleCompanies.length }} companies</strong></section>
+@if (loading) { <section class="status-panel">Loading companies...</section> } @else if (!visibleCompanies.length) { <section class="empty-panel">No companies match your search.</section> } @else { <div class="company-grid">@for (company of visibleCompanies; track company.id) {<article class="panel company-card"><div><p class="eyebrow">{{ company.country }}</p><h2>{{ company.name }}</h2><p class="muted">{{ company.fullAddress }}</p></div><a class="primary-button" [routerLink]="['/companies', company.id]">Open details &rarr;</a></article>}</div> }
