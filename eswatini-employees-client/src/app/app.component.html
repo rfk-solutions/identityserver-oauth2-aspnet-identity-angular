@@ -1,0 +1,25 @@
+<header class="site-header">
+  <nav class="navbar container" aria-label="Primary navigation">
+    <a class="brand" routerLink="/">EswatiniEmployees</a>
+    <div class="nav-links">
+      <a class="nav-link" routerLink="/companies" routerLinkActive="active">Companies</a>
+      @if (auth.loading()) {
+        <span class="user-status">Connecting...</span>
+      } @else if (auth.authenticated()) {
+        @if (auth.user(); as user) {
+          <span class="user-name">{{ user.profile['name'] || user.profile['email'] || 'Signed in' }}</span>
+          <button class="nav-link button-link" type="button" (click)="auth.logout()">Logout</button>
+        }
+      } @else {
+        <button class="nav-link button-link" type="button" (click)="auth.login('/companies')">Login</button>
+        <a class="nav-link" [href]="auth.registrationUrl('/companies')">Register</a>
+      }
+    </div>
+  </nav>
+</header>
+
+<main class="container page-content">
+  <router-outlet />
+</main>
+
+<footer class="site-footer"><div class="container">EswatiniEmployees Client</div></footer>

@@ -1,0 +1,22 @@
+<section class="page-heading">
+  <div><p class="eyebrow">Directory</p><h1>Companies</h1></div>
+  <button class="outline-button" type="button" (click)="loadCompanies()" [disabled]="loading">Refresh</button>
+</section>
+@if (loading) {
+  <section class="status-panel"><span class="spinner"></span> Loading companies...</section>
+} @else if (error) {
+  <section class="alert">{{ error }}</section>
+} @else if (companies.length === 0) {
+  <section class="empty-panel">No companies were returned by the API.</section>
+} @else {
+  <div class="table-shell">
+    <table>
+      <thead><tr><th>Name</th><th>Full address</th></tr></thead>
+      <tbody>
+        @for (company of companies; track company.id) {
+          <tr><td>{{ company.name }}</td><td>{{ company.fullAddress }}</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

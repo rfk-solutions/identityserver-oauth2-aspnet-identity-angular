@@ -1,0 +1,160 @@
+# 🚀 EswatiniEmployees — Duende IdentityServer & ASP.NET Core OAuth Solution
+
+[![.NET](https://img.shields.io/badge/.NET-8.0%2B-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Duende IdentityServer](https://img.shields.io/badge/Auth-Duende_IdentityServer-000000?logo=security&logoColor=white)](https://duendesoftware.com/)
+[![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-CC2927?logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+A comprehensive, production-ready OAuth 2.0 and OpenID Connect (OIDC) implementation using **Duende IdentityServer** and **ASP.NET Core Identity**. This repository provides a complete microservices-style authentication setup, including an Identity Provider (IDP), a secured Web API, and a consuming Web Client relying on the Authorization Code flow with PKCE.
+
+---
+
+## 🌐 Live Demo
+
+**[View Live API Demo](https://eswatini-employees-client-fyfdd5d5djfee4a7.southafricanorth-01.azurewebsites.net)**
+
+> The demo is hosted on Microsoft Azure.
+---
+
+## ✨ Features
+
+* ⚡ **Duende IdentityServer Configuration:** Fully configured for OIDC and OAuth 2.0.
+* 🔐 **ASP.NET Core Identity Integration:** Complete user management with Entity Framework Core.
+* 🛡️ **Authorization Code Flow with PKCE:** Secure authentication pattern for interactive clients.
+* 🔑 **JWT & Cookie Authentication:** Bearer token validation for APIs and cookie auth for UI clients.
+* 🌐 **External Identity Providers:** Pre-configured Google Authentication integration.
+* 📧 **Email Service Verification:** Built-in email sender for account confirmation and password resets.
+* 🗄️ **Entity Framework Core:** Operational and Configuration data stores for IdentityServer.
+* 🏗️ **Multi-Project Architecture:** Clean separation of IDP, Client, API, and Email services.
+
+---
+
+## 🛠️ Technology Stack
+
+| Technology               | Purpose                                |
+| ------------------------ | -------------------------------------- |
+| .NET                     | Core framework                         |
+| Duende.IdentityServer    | OpenID Connect & OAuth 2.0 framework   |
+| ASP.NET Core Identity    | User membership and login              |
+| Entity Framework Core    | ORM for Identity and Config databases  |
+| SQL Server               | Relational database backend            |
+| JWT / OIDC               | Secure token-based authentication      |
+| Serilog                  | Structured request logging             |
+
+---
+
+## 🚀 Getting Started
+
+### 1. Database Configuration
+
+You need two SQL Server databases: one for the API data and one for the Identity Provider (users, configuration, and operational data).
+
+Open `appsettings.json` in the **EswatiniEmployees.IDP** project and configure your connection strings:
+
+```json
+{
+  "ConnectionStrings": {
+    "sqlConnection": "server=.; database=EswatiniEmployee01OAuth; Integrated Security=true; TrustServerCertificate=true",
+    "identitySqlConnection": "server=.; database=EswatiniEmployee01OAuthIdentity; Integrated Security=true; TrustServerCertificate=true"
+  }
+}
+```
+
+Do the same for the **EswatiniEmployees** API project:
+
+```json
+{
+  "ConnectionStrings": {
+    "sqlConnection": "server=.; database=EswatiniEmployee01; Integrated Security=true; TrustServerCertificate=true"
+  }
+}
+```
+
+### 2. Configure Email Credentials (IDP)
+
+Update the SMTP settings in the IDP's `appsettings.json` for email verification to work:
+
+```json
+"EmailConfiguration": {
+  "From": "support.rfk@gmail.com",
+  "SmtpServer": "smtp.gmail.com",
+  "Port": 465,
+  "Username": "support.rfk@gmail.com",
+  "Password": "your-app-password-here"
+}
+```
+
+### 3. Apply Entity Framework Migrations
+
+Open the Package Manager Console (PMC) in Visual Studio, set **EswatiniEmployees.IDP** as the default project, and run the following commands to generate and apply the databases:
+
+```powershell
+# Create Operational Store Migration
+Add-Migration InitialPersistedGrantMigration -c PersistedGrantDbContext -o Migrations/IdentityServer/PersistedGrantDb
+
+# Create Configuration Store Migration
+Add-Migration InitialConfigurationMigration -c ConfigurationDbContext -o Migrations/IdentityServer/ConfigurationDb
+
+# Create ASP.NET Core Identity Migration
+Add-Migration CreateIdentityTables -Context UserContext
+
+# Apply to database
+Update-Database -Context UserContext
+```
+
+> **Note:** Make sure you seed the Configuration Store (Clients, Resources, ApiScopes) from `Config.cs` during your initial application startup.
+
+### 4. Running the Solution
+
+The solution relies on specific ports for the OAuth trust checks to pass. Ensure the launch profiles map to the following:
+
+* **IDP (Identity Provider):** `https://localhost:5005`
+* **API (Resource Server):** `https://localhost:5001`
+* **Client (Web App):** `https://localhost:5010`
+
+Run all three projects concurrently. 
+
+### Angular Client
+
+The Angular client is in `eswatini-employees-client`. It uses the Authorization Code flow with PKCE through `oidc-client-ts`, calls the protected companies endpoint with the access token, and shares the existing client's restrained Bootstrap-inspired visual language.
+
+Start it with:
+
+```powershell
+cd eswatini-employees-client
+npm install
+npm start
+```
+
+Then open `http://localhost:4200`. The Angular client is registered as `eswatiniemployeeangularclient` and supports both `http://localhost:4200` and `https://localhost:4200` callback URLs. Start the IDP on `https://localhost:5005` and the API on `https://localhost:5001` first.
+
+---
+
+## 🏗️ Project Architecture
+
+The solution is divided into domain-specific boundaries:
+
+* **`EswatiniEmployees.IDP`**: The Duende IdentityServer host. Manages users, issues tokens, provides login/consent pages, and handles Google external logins.
+* **`EswatiniEmployees.Client`**: The front-end ASP.NET Core web application. Uses OpenID Connect to authenticate users via the IDP and calls the API using a captured Access Token.
+* **`EswatiniEmployees`**: The secure Resource API. Validates incoming JWT Bearer tokens and requires specific policies (e.g., `RequireClaim("country", "Eswatini")`).
+* **`EmailService`**: A reusable class library containing the `IEmailSender` implementation for routing validation emails.
+
+---
+
+## 🔐 Authorization Flow
+
+The application implements the **Authorization Code Flow with PKCE** for secure, interactive client authentication. 
+
+**Process Overview:**
+1. Unauthenticated users attempting to access protected Client pages are redirected to the IDP `authorize` endpoint with a `code_challenge`.
+2. The user authenticates at the IDP (via local login or Google) and consents to the requested scopes (`eswatiniemployeeapi.scope`, `roles`, `country`).
+3. The IDP returns an authorization code to the Client.
+4. The Client silently calls the IDP `token` endpoint, passing the authorization code and the `code_verifier`.
+5. The IDP validates the code and verifier, returning an `id_token` and an `access_token`.
+6. The Client uses the `access_token` to make secure requests to the Web API.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).

@@ -1,0 +1,17 @@
+﻿.vs/
+**/.vs/
+**/bin/
+**/obj/
+*.user
+*.suo
+*.cache
+*.db
+*.db-shm
+*.db-wal
+*.vsidx
+*.pdb
+*.log
+
+# Local secrets and IdentityServer signing keys
+EswatiniEmployees.IDP/appsettings.json
+EswatiniEmployees.IDP/keys/

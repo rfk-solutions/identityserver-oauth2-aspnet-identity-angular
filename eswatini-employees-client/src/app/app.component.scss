@@ -1,0 +1,13 @@
+:host { display: block; }
+.site-header { background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgb(15 23 42 / 5%); }
+.navbar { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { color: var(--ink); font-size: 1.05rem; font-weight: 700; text-decoration: none; }
+.nav-links { display: flex; align-items: center; gap: 22px; }
+.nav-link { color: var(--muted); font-size: .92rem; text-decoration: none; }
+.nav-link:hover, .nav-link.active { color: var(--accent); }
+.button-link { background: none; border: 0; cursor: pointer; font: inherit; padding: 0; }
+.user-status, .user-name { color: var(--muted); font-size: .85rem; }
+.user-name { border-left: 1px solid var(--border); padding-left: 22px; }
+.page-content { min-height: calc(100vh - 128px); padding-top: 56px; }
+.site-footer { border-top: 1px solid var(--border); color: var(--muted); font-size: .82rem; padding: 20px 0; }
+@media (max-width: 640px) { .navbar { align-items: flex-start; flex-direction: column; padding-bottom: 16px; padding-top: 16px; } .nav-links { flex-wrap: wrap; gap: 12px 18px; } .user-name { border-left: 0; padding-left: 0; width: 100%; } }
