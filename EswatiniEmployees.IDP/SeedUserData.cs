@@ -30,12 +30,12 @@ public class SeedUserData
             using (var scope = serviceProvider
                 .GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                CreateUser(scope, "John", "Doe", "John Doe's Boulevard 323", "USA",
-                    "97a3aa4a-7a89-47f3-9814-74497fb92ccb", "JohnPassword",
+                CreateUser(scope, "John", "Doe", "John Doe's Manzini", "Eswatini",
+                    "97a3aa4a-7a89-47f3-9814-74497fb92ccb", "John@240Password",
                     "Administrator", "john@mail.com");
 
-                CreateUser(scope, "Jane", "Doe", "Jane Doe's Avenue 214", "USA",
-                    "64aca900-7bc7-4645-b291-38f1b7b5963c", "JanePassword",
+                CreateUser(scope, "Jane", "Doe", "Jane Doe's Matsapha", "Eswatini",
+                    "64aca900-7bc7-4645-b291-38f1b7b5963c", "Jane@240Password",
                     "Visitor", "jane@mail.com");
             }
         }
