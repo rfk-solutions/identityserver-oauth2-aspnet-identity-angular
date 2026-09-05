@@ -65,12 +65,18 @@ internal static class HostingExtensions
         builder.Services.Configure<EmailConfirmationTokenProviderOptions>(opt =>
             opt.TokenLifespan = TimeSpan.FromDays(3));
 
-        builder.Services.AddAuthentication()
-        .AddGoogle(options =>
+        var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+        var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
+        var authenticationBuilder = builder.Services.AddAuthentication();
+        if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(googleClientSecret))
         {
-            options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-            options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-        });
+            authenticationBuilder.AddGoogle(options =>
+            {
+                options.ClientId = googleClientId;
+                options.ClientSecret = googleClientSecret;
+            });
+        }
 
 
         return builder.Build();
