@@ -9,8 +9,8 @@ import { HomePageComponent } from './features/home/home-page.component';
 export const routes: Routes = [
 	{ path: '', component: HomePageComponent },
 	{ path: 'companies', component: CompaniesPageComponent, canActivate: [authGuard] },
-		{ path: 'companies/:id', component: CompanyDetailsPageComponent, canActivate: [authGuard] },
 		{ path: 'companies/:id/employees', component: EmployeesPageComponent, canActivate: [authGuard] },
+		{ path: 'companies/:id', component: CompanyDetailsPageComponent, canActivate: [authGuard] },
 	{ path: 'auth/callback', component: AuthCallbackComponent },
 	{ path: '**', redirectTo: '' }
 ];
