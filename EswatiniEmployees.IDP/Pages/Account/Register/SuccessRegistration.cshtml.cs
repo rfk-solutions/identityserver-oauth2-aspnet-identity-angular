@@ -7,8 +7,11 @@ namespace EswatiniEmployees.IDP.Pages.Account.Register
     [AllowAnonymous]
     public class SuccessRegistrationModel : PageModel
     {
-        public IActionResult OnGet()
+        public string ReturnUrl { get; set; }
+
+        public IActionResult OnGet(string returnUrl)
         {
+            ReturnUrl = returnUrl;
             return Page();
         }
     }

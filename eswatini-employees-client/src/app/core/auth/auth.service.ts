@@ -63,7 +63,7 @@ export class AuthService {
     });
   }
 
-  registrationUrl(returnUrl = `${window.location.origin}${window.location.pathname}`): string {
+  registrationUrl(returnUrl = `${window.location.origin}/`): string {
     return `${appConfig.identityServer.authority}/Account/Register/Register?returnUrl=${encodeURIComponent(returnUrl)}`;
   }
 

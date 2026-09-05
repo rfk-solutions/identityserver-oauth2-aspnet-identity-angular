@@ -28,9 +28,27 @@ namespace EswatiniEmployees.IDP.Pages.Account.Register
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
-                return Page();
+                return Redirect(SafeReturnUrl(returnUrl));
             else
                 return RedirectToPage("/Account/Error", new { returnUrl });
+        }
+
+        private string SafeReturnUrl(string returnUrl)
+        {
+            if (!Uri.TryCreate(returnUrl, UriKind.Absolute, out var uri))
+                return "/Account/Login/Index";
+
+            var configuredOrigin = HttpContext.RequestServices
+                .GetRequiredService<IConfiguration>()
+                ["Authentication:Angular:ClientOrigin"];
+            var defaultOrigins = new[] { "http://localhost:4200", "https://localhost:4200" };
+            var origin = uri.GetLeftPart(UriPartial.Authority).TrimEnd('/');
+            var isAllowed = (configuredOrigin is not null && origin.Equals(configuredOrigin.TrimEnd('/'), StringComparison.OrdinalIgnoreCase))
+                || defaultOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase);
+
+            return isAllowed && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+                ? uri.ToString()
+                : "/Account/Login/Index";
         }
     }
 }
