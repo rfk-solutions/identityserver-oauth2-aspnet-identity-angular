@@ -40,6 +40,8 @@ A comprehensive, production-ready OAuth 2.0 and OpenID Connect (OIDC) implementa
 | SQL Server               | Relational database backend            |
 | JWT / OIDC               | Secure token-based authentication      |
 | Serilog                  | Structured request logging             |
+| Angular 19               | SPA client application                 |
+| oidc-client-ts           | OIDC Authorization Code + PKCE client  |
 
 ---
 
@@ -104,29 +106,61 @@ Update-Database -Context UserContext
 
 > **Note:** Make sure you seed the Configuration Store (Clients, Resources, ApiScopes) from `Config.cs` during your initial application startup.
 
-### 4. Running the Solution
+### 4. Angular Client Setup
+
+The Angular client application is located in `eswatini-employees-client`. It uses Angular 19 and `oidc-client-ts` with the Authorization Code flow and PKCE.
+
+Prerequisites:
+
+* Node.js 18.19 or newer
+* npm 10 or newer
+
+Install the dependencies and start the development server:
+
+```powershell
+cd eswatini-employees-client
+npm ci
+npm start
+```
+
+Open `http://localhost:4200` after the server starts. The client is registered in IdentityServer as `eswatiniemployeeangularclient` and uses these local endpoints:
+
+* IdentityServer: `https://localhost:5005`
+* API: `https://localhost:5001/api`
+* OAuth callback: `http://localhost:4200/auth/callback`
+
+Useful Angular commands:
+
+```powershell
+npm run build
+npm test
+```
+
+The API and IdentityServer must be running before signing in through the Angular client.
+
+### 5. Running the ASP.NET Solution
 
 The solution relies on specific ports for the OAuth trust checks to pass. Ensure the launch profiles map to the following:
 
 * **IDP (Identity Provider):** `https://localhost:5005`
 * **API (Resource Server):** `https://localhost:5001`
-* **Client (Web App):** `https://localhost:5010`
+* **ASP.NET Client (Web App):** `https://localhost:5010`
 
-Run all three projects concurrently. 
+Run the IDP and API together with either the ASP.NET client or the Angular client.
 
-### Angular Client
+### Angular Client Runtime
 
-The Angular client is in `eswatini-employees-client`. It uses the Authorization Code flow with PKCE through `oidc-client-ts`, calls the protected companies endpoint with the access token, and shares the existing client's restrained Bootstrap-inspired visual language.
+The Angular client calls the protected companies endpoint with the access token. Its runtime configuration is in `eswatini-employees-client/src/environments/environment.ts` and `environment.development.ts`.
 
 Start it with:
 
 ```powershell
 cd eswatini-employees-client
-npm install
+npm ci
 npm start
 ```
 
-Then open `http://localhost:4200`. The Angular client is registered as `eswatiniemployeeangularclient` and supports both `http://localhost:4200` and `https://localhost:4200` callback URLs. Start the IDP on `https://localhost:5005` and the API on `https://localhost:5001` first.
+Then open `http://localhost:4200`. The Angular client also supports the HTTPS callback URL configured in IdentityServer.
 
 ---
 
@@ -135,7 +169,8 @@ Then open `http://localhost:4200`. The Angular client is registered as `eswatini
 The solution is divided into domain-specific boundaries:
 
 * **`EswatiniEmployees.IDP`**: The Duende IdentityServer host. Manages users, issues tokens, provides login/consent pages, and handles Google external logins.
-* **`EswatiniEmployees.Client`**: The front-end ASP.NET Core web application. Uses OpenID Connect to authenticate users via the IDP and calls the API using a captured Access Token.
+* **`EswatiniEmployees.Client`**: The optional front-end ASP.NET Core web application. Uses OpenID Connect to authenticate users via the IDP and calls the API using a captured access token.
+* **`eswatini-employees-client`**: The Angular 19 single-page client. Uses `oidc-client-ts` and PKCE to authenticate through the IDP and call the protected API.
 * **`EswatiniEmployees`**: The secure Resource API. Validates incoming JWT Bearer tokens and requires specific policies (e.g., `RequireClaim("country", "Eswatini")`).
 * **`EmailService`**: A reusable class library containing the `IEmailSender` implementation for routing validation emails.
 
