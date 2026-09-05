@@ -1,6 +1,30 @@
-<section class="page-heading"><div><p class="eyebrow">Directory</p><h1>Companies</h1><p class="muted">Browse organizations and open a company workspace.</p></div><button class="outline-button" type="button" (click)="loadCompanies()" [disabled]="loading">Refresh</button></section>
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Directory</p>
+        <h1>Companies</h1>
+        <p class="muted">Browse organizations and open a company workspace.</p>
+    </div><button class="outline-button" type="button" (click)="loadCompanies()" [disabled]="loading">Refresh</button>
+</section>
 @if (notice) { <section class="notice">{{ notice }}</section> }
 @if (error) { <section class="alert">{{ error }}</section> }
-<section class="panel create-panel"><form (ngSubmit)="createCompany()"><h2>Add a company</h2><div class="form-grid"><label>Name<input name="name" [(ngModel)]="draft.name" maxlength="60" required></label><label>Address<input name="address" [(ngModel)]="draft.address" maxlength="60" required></label><label>Country<input name="country" [(ngModel)]="draft.country"></label><button class="primary-button" type="submit" [disabled]="saving">Create company</button></div></form></section>
-<section class="toolbar"><label class="search"><span>Search directory</span><input [(ngModel)]="query" placeholder="Search by company or address"></label><strong>{{ visibleCompanies.length }} companies</strong></section>
-@if (loading) { <section class="status-panel">Loading companies...</section> } @else if (!visibleCompanies.length) { <section class="empty-panel">No companies match your search.</section> } @else { <div class="company-grid">@for (company of visibleCompanies; track company.id) {<article class="panel company-card"><div><p class="eyebrow">{{ company.country }}</p><h2>{{ company.name }}</h2><p class="muted">{{ company.fullAddress }}</p></div><a class="primary-button" [routerLink]="['/companies', company.id]">Open details &rarr;</a></article>}</div> }
+<section class="panel create-panel">
+    <form (ngSubmit)="createCompany()">
+        <h2>Add a company</h2>
+        <div class="form-grid"><label>Name<input name="name" [(ngModel)]="draft.name" maxlength="60"
+                    required></label><label>Address<input name="address" [(ngModel)]="draft.address" maxlength="60"
+                    required></label><label>Country<input name="country" [(ngModel)]="draft.country"></label><button
+                class="primary-button" type="submit" [disabled]="saving">Create company</button></div>
+    </form>
+</section>
+<section class="toolbar"><label class="search"><span>Search directory</span><input [(ngModel)]="query"
+            placeholder="Search by company or address"></label><strong>{{ visibleCompanies.length }} companies</strong>
+</section>
+@if (loading) { <section class="status-panel">Loading companies...</section> } @else if (!visibleCompanies.length) {
+<section class="empty-panel">No companies match your search.</section> } @else { <div class="company-grid">@for (company
+    of visibleCompanies; track company.id) {<article class="panel company-card">
+        <div>
+            <p class="eyebrow">{{ company.country }}</p>
+            <h2>{{ company.name }}</h2>
+            <p class="muted">{{ company.fullAddress }}</p>
+        </div><a class="primary-button" [routerLink]="['/companies', company.id]">Open details &rarr;</a>
+    </article>}</div> }
