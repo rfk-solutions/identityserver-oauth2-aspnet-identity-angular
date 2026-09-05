@@ -12,7 +12,7 @@ using Repository;
 namespace EswatiniEmployees.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20260905084616_AddCompanyAndEmployeeSeedData")]
+    [Migration("20260905084819_AddCompanyAndEmployeeSeedData")]
     partial class AddCompanyAndEmployeeSeedData
     {
         /// <inheritdoc />
@@ -107,8 +107,8 @@ namespace EswatiniEmployees.Migrations
 
                     b.Property<string>("Position")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 

@@ -13,6 +13,16 @@ namespace EswatiniEmployees.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "Position",
+                table: "Employees",
+                type: "nvarchar(50)",
+                maxLength: 50,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(20)",
+                oldMaxLength: 20);
+
             migrationBuilder.UpdateData(
                 table: "Companies",
                 keyColumn: "CompanyId",
@@ -365,6 +375,16 @@ namespace EswatiniEmployees.Migrations
                 table: "Companies",
                 keyColumn: "CompanyId",
                 keyValue: new Guid("f2c90e44-8832-4e2b-b98a-7d1a23e59041"));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Position",
+                table: "Employees",
+                type: "nvarchar(20)",
+                maxLength: 20,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(50)",
+                oldMaxLength: 50);
 
             migrationBuilder.UpdateData(
                 table: "Companies",
