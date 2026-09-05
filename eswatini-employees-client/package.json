@@ -1,6 +1,19 @@
 {
   "name": "eswatini-employees-client",
   "version": "0.0.0",
+  "description": "Angular 19 employee management client secured with Duende IdentityServer, OAuth 2.0, OpenID Connect, and PKCE.",
+  "keywords": [
+    "angular",
+    "typescript",
+    "oidc",
+    "openid-connect",
+    "oauth",
+    "duende-identityserver",
+    "aspnet-core",
+    "eswatini",
+    "employees",
+    "security"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

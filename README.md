@@ -30,6 +30,19 @@ A comprehensive OAuth 2.0 and OpenID Connect (OIDC) implementation using **Duend
 * 🅰️ **Angular 19 Client:** TypeScript single-page application in `eswatini-employees-client` using `oidc-client-ts` and PKCE.
 * 🏗️ **Multi-Project Architecture:** Clean separation of IDP, Angular client, optional ASP.NET client, API, and Email services.
 
+## 🏷️ Topics
+
+* IdentityServer
+* OAuth 2.0
+* OpenID Connect
+* ASP.NET Core
+* Angular
+* PKCE
+* JWT
+* Security
+* Employee Management
+* Eswatini
+
 ---
 
 ## 🛠️ Technology Stack
