@@ -1,6 +1,80 @@
-<section class="welcome-panel">
-  <p class="eyebrow">Eswatini employee directory</p>
-  <h1>Welcome back.</h1>
-  <p>Sign in with the EswatiniEmployees identity server to view company data.</p>
-  <button class="primary-button" type="button" (click)="auth.login('/companies')">Sign in</button>
-</section>
+<div class="home-container">
+  <!-- Hero / Welcome Panel -->
+  <section class="welcome-panel">
+    <div class="welcome-content">
+      <span class="eyebrow">
+        <span class="dot"></span>
+        Eswatini Employee Directory
+      </span>
+
+      @if (auth.authenticated()) {
+        @if (auth.user(); as user) {
+          <h1>Welcome back, <span class="highlight">{{ auth.displayName() }}</span></h1>
+          <p class="description">
+            Access updated organization rosters, company verification data, and employee analytics across Eswatini.
+          </p>
+          
+          <div class="action-group">
+            <a class="btn btn-primary" routerLink="/companies">
+              Browse Companies
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <button class="btn btn-outline" type="button" (click)="auth.logout()">
+              Sign Out
+            </button>
+          </div>
+        }
+      } @else {
+        <h1>Secure Enterprise <br/><span class="highlight">Employee Insights</span></h1>
+        <p class="description">
+          Sign in via the centralized EswatiniEmployees identity server to securely view verified company records and workforce metrics.
+        </p>
+
+        <div class="action-group">
+          <button class="btn btn-primary" type="button" [disabled]="auth.loading()" (click)="auth.login('/companies')">
+            @if (auth.loading()) {
+              Connecting...
+            } @else {
+              Sign In to Continue
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+            }
+          </button>
+          <a class="btn btn-secondary" [href]="auth.registrationUrl('/companies')">Create Account</a>
+        </div>
+      }
+    </div>
+
+    <!-- Security Indicator -->
+    <div class="security-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Protected by OAuth2 / OpenID Connect SSO
+    </div>
+  </section>
+
+  <!-- Feature Grid -->
+  <section class="feature-grid">
+    <div class="feature-card">
+      <div class="icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
+      </div>
+      <h3>Verified Companies</h3>
+      <p>Explore comprehensive directory listings with validated organizational structures.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Workforce Records</h3>
+      <p>Direct access to standardized employee profiles and operational departments.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <h3>SSO Integrated</h3>
+      <p>Single sign-on security ensures identity integrity across all client platforms.</p>
+    </div>
+  </section>
+</div>

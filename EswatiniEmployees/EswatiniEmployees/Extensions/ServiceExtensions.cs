@@ -39,11 +39,11 @@ public static class ServiceExtensions
     public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder) =>
         builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
 
-    public static void ConfigureAuthenticationHandler(this IServiceCollection services)
+    public static void ConfigureAuthenticationHandler(this IServiceCollection services, IConfiguration configuration)
         => services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>
         {
-            options.Authority = "https://localhost:5005";
+            options.Authority = configuration["Authentication:Authority"]!;
             options.Audience = "eswatiniemployeeapi";
         });
 }

@@ -23,6 +23,12 @@ export class AuthService {
     const user = this.user();
     return !!user && !user.expired;
   });
+  readonly firstName = computed(() => this.profileClaim('given_name'));
+  readonly lastName = computed(() => this.profileClaim('family_name'));
+  readonly displayName = computed(() => {
+    const fullName = [this.firstName(), this.lastName()].filter(Boolean).join(' ');
+    return fullName || this.profileClaim('name') || this.profileClaim('email') || 'Signed in';
+  });
   readonly loading = signal(true);
 
   constructor() {
@@ -87,5 +93,10 @@ export class AuthService {
   private safeReturnUrl(returnUrl: string): string {
     if (!returnUrl.startsWith('/') || returnUrl.startsWith('//')) return '/';
     return returnUrl;
+  }
+
+  private profileClaim(claim: string): string {
+    const value = this.user()?.profile[claim];
+    return typeof value === 'string' ? value : '';
   }
 }

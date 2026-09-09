@@ -31,7 +31,7 @@ public static class Config
             }
         };
 
-    public static IEnumerable<Client> Clients =>
+    public static IEnumerable<Client> Clients(string clientOrigin = "http://localhost:4200") =>
         new Client[]
         {
             new Client
@@ -90,7 +90,7 @@ public static class Config
                     "http://localhost:4200/",
                     "https://localhost:4200/"
                 },
-                ClientUri = "https://localhost:4200",
+                ClientUri = clientOrigin,
                 AccessTokenLifetime = 120,
                 AllowOfflineAccess = true,
                 UpdateAccessTokenClaimsOnRefresh = true

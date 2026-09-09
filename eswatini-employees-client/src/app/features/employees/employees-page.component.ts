@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService, Company, Employee, EmployeeInput } from '../../core/api/api.service';
+import { ModalService } from '../../core/modal/modal.service';
 
 type EmployeeSort = 'name' | 'age' | 'position';
 
@@ -15,6 +16,8 @@ type EmployeeSort = 'name' | 'age' | 'position';
 export class EmployeesPageComponent {
   private readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
+  private readonly modal = inject(ModalService);
+  @ViewChild('editorForm') editorForm!: ElementRef<HTMLFormElement>;
   company: Company | null = null;
   employees: Employee[] = [];
   query = '';
@@ -92,13 +95,26 @@ export class EmployeesPageComponent {
     this.currentPage = Math.min(Math.max(page, 1), this.totalPages);
   }
 
-  startEdit(employee: Employee): void {
+startEdit(employee: Employee): void {
     this.editingId = employee.id;
     this.draft = { name: employee.name, age: employee.age, position: employee.position };
+
+    // Scroll to the editor form on the next event tick
+    setTimeout(() => {
+      this.editorForm?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (!this.company) return;
+    if (this.editingId) {
+      const confirmed = await this.modal.confirm({
+        title: 'Update employee record?',
+        message: 'Save these changes to the employee record?',
+        confirmLabel: 'Update employee'
+      });
+      if (!confirmed) return;
+    }
     this.saving = true;
     const complete = (message: string) => {
       this.notice = message;
@@ -108,31 +124,43 @@ export class EmployeesPageComponent {
     };
     if (this.editingId) {
       this.api.updateEmployee(this.company.id, this.editingId, this.draft).subscribe({
-        next: () => complete('Employee updated.'),
+        next: () => { complete('Employee updated.'); void this.modal.success('The employee record was updated successfully.'); },
         error: () => this.fail('The employee could not be updated.')
       });
     } else {
       this.api.createEmployee(this.company.id, this.draft).subscribe({
-        next: () => complete('Employee created.'),
+        next: () => { complete('Employee created.'); void this.modal.success('The employee was added successfully.'); },
         error: () => this.fail('The employee could not be created.')
       });
     }
   }
 
-  patch(): void {
+  async patch(): Promise<void> {
     if (!this.company || !this.editingId) return;
+    const confirmed = await this.modal.confirm({
+      title: 'Apply JSON Patch update?',
+      message: 'The employee record will be updated using the current field values.',
+      confirmLabel: 'Apply update'
+    });
+    if (!confirmed) return;
     this.saving = true;
     this.api.patchEmployee(this.company.id, this.editingId, this.draft).subscribe({
-      next: () => { this.notice = 'Employee patched.'; this.saving = false; this.cancelEdit(); this.loadEmployees(); },
+      next: () => { this.notice = 'Employee patched.'; this.saving = false; this.cancelEdit(); this.loadEmployees(); void this.modal.success('The employee patch was applied successfully.'); },
       error: () => this.fail('The employee patch could not be applied.')
     });
   }
 
-  delete(employee: Employee): void {
-    if (!this.company || !window.confirm(`Delete ${employee.name}?`)) return;
+  async delete(employee: Employee): Promise<void> {
+    if (!this.company) return;
+    const confirmed = await this.modal.confirm({
+      title: `Delete ${employee.name}?`,
+      message: 'This employee record will be permanently removed from the company.',
+      confirmLabel: 'Delete employee'
+    });
+    if (!confirmed) return;
     this.saving = true;
     this.api.deleteEmployee(this.company.id, employee.id).subscribe({
-      next: () => { this.notice = 'Employee deleted.'; this.saving = false; this.loadEmployees(); },
+      next: () => { this.notice = 'Employee deleted.'; this.saving = false; this.loadEmployees(); void this.modal.success('The employee was deleted successfully.'); },
       error: () => this.fail('The employee could not be deleted.')
     });
   }
@@ -140,4 +168,5 @@ export class EmployeesPageComponent {
   cancelEdit(): void { this.editingId = ''; this.draft = this.emptyDraft(); }
   private fail(message: string): void { this.error = message; this.saving = false; }
   private emptyDraft(): EmployeeInput { return { name: '', age: 18, position: '' }; }
+  
 }

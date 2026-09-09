@@ -3,8 +3,10 @@ using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Validation;
+using EswatiniEmployees.IDP.Entities;
 using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -17,15 +19,18 @@ public class Index : PageModel
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IEventService _events;
     private readonly ILogger<Index> _logger;
+    private readonly SignInManager<User> _signInManager;
 
     public Index(
         IIdentityServerInteractionService interaction,
         IEventService events,
-        ILogger<Index> logger)
+        ILogger<Index> logger,
+        SignInManager<User> signInManager)
     {
         _interaction = interaction;
         _events = events;
         _logger = logger;
+        _signInManager = signInManager;
     }
 
     public ViewModel View { get; set; }
@@ -64,6 +69,10 @@ public class Index : PageModel
 
             // emit event
             await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
+
+            await _interaction.GrantConsentAsync(request, grantedConsent);
+            await _signInManager.SignOutAsync();
+            return Redirect(request.Client.ClientUri ?? "/");
         }
         // user clicked 'yes' - validate the data
         else if (Input?.Button == "yes")

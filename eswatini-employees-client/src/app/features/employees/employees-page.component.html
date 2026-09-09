@@ -4,8 +4,8 @@
 <section class="alert">{{ error }}</section>
 } @else if (company) {
 <a class="back-link" [routerLink]="['/companies', company.id]">&larr; Back to {{ company.name }}</a>
-@if (notice) { <section class="notice">{{ notice }}</section> }
-@if (error) { <section class="alert">{{ error }}</section> }
+<!-- @if (notice) { <section class="notice">{{ notice }}</section> }
+@if (error) { <section class="alert">{{ error }}</section> } -->
 <section class="page-heading">
     <div>
         <p class="eyebrow">Employee directory</p>
@@ -13,7 +13,7 @@
         <p class="muted">Search and manage every employee assigned to this company.</p>
     </div><a class="outline-button" [routerLink]="['/companies', company.id]">Company details</a>
 </section>
-<form class="panel form-stack employee-editor" (ngSubmit)="save()">
+<form #editorForm class="panel form-stack employee-editor" (ngSubmit)="save()">
     <div class="form-title">
         <div>
             <p class="eyebrow">{{ editingId ? 'Employee record' : 'New employee' }}</p>

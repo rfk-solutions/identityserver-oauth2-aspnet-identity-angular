@@ -24,4 +24,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\EmailService\EmailService.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+       <None Include="web.config" CopyToPublishDirectory="Always" />
+    </ItemGroup>
 </Project>

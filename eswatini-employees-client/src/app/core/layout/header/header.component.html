@@ -1,0 +1,34 @@
+<header class="site-header">
+      <nav class="navbar container" aria-label="Primary navigation">
+        <a class="brand" routerLink="/">
+          <span class="brand-accent">Eswatini</span>Employees
+        </a>
+
+        <button 
+          class="mobile-toggle" 
+          type="button" 
+          [attr.aria-expanded]="menuOpen()" 
+          aria-label="Toggle navigation"
+          (click)="toggleMenu()">
+          <span class="hamburger" [class.open]="menuOpen()"></span>
+        </button>
+
+        <div class="nav-menu" [class.is-active]="menuOpen()">
+          <a class="nav-link" routerLink="/companies" routerLinkActive="active" (click)="closeMenu()">Companies</a>
+          
+          <div class="auth-group">
+            @if (auth.loading()) {
+              <span class="user-status">Connecting...</span>
+            } @else if (auth.authenticated()) {
+              @if (auth.user(); as user) {
+                <span class="user-name">{{ auth.displayName() }}</span>
+                <button class="btn btn-outline" type="button" (click)="auth.logout(); closeMenu()">Logout</button>
+              }
+            } @else {
+              <button class="btn btn-ghost" type="button" (click)="auth.login('/companies'); closeMenu()">Login</button>
+              <a class="btn btn-primary" [href]="auth.registrationUrl('/companies')" (click)="closeMenu()">Register</a>
+            }
+          </div>
+        </div>
+      </nav>
+    </header>

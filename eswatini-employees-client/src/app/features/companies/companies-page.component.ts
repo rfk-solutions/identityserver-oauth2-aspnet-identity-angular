@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ApiService, Company, CompanyInput } from '../../core/api/api.service';
+import { ModalService } from '../../core/modal/modal.service';
 
 @Component({
   selector: 'app-companies-page',
@@ -12,6 +13,7 @@ import { ApiService, Company, CompanyInput } from '../../core/api/api.service';
 })
 export class CompaniesPageComponent {
   private readonly api = inject(ApiService);
+  private readonly modal = inject(ModalService);
   companies: Company[] = [];
   query = '';
   draft: CompanyInput = { name: '', address: '', country: 'Eswatini' };
@@ -38,7 +40,7 @@ export class CompaniesPageComponent {
   createCompany(): void {
     this.saving = true;
     this.api.createCompany(this.draft).subscribe({
-      next: (company) => { this.companies = [...this.companies, company]; this.draft = { name: '', address: '', country: 'Eswatini' }; this.notice = 'Company created.'; this.saving = false; },
+      next: (company) => { this.companies = [...this.companies, company]; this.draft = { name: '', address: '', country: 'Eswatini' }; this.notice = 'Company created.'; this.saving = false; void this.modal.success('The company was created successfully.'); },
       error: () => { this.error = 'The company could not be created.'; this.saving = false; }
     });
   }

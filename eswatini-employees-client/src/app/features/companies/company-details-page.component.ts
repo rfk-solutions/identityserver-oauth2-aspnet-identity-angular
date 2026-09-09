@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService, Company, CompanyInput, Employee } from '../../core/api/api.service';
+import { ModalService } from '../../core/modal/modal.service';
 
 @Component({
   selector: 'app-company-details-page',
@@ -13,6 +14,7 @@ import { ApiService, Company, CompanyInput, Employee } from '../../core/api/api.
 export class CompanyDetailsPageComponent {
   private readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
+  private readonly modal = inject(ModalService);
   company: Company | null = null;
   employees: Employee[] = [];
   draft: CompanyInput = { name: '', address: '', country: 'Eswatini' };
@@ -42,8 +44,14 @@ export class CompanyDetailsPageComponent {
     });
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (!this.company) return;
+    const confirmed = await this.modal.confirm({
+      title: 'Update company details?',
+      message: 'The current company information will be replaced with these changes.',
+      confirmLabel: 'Update company'
+    });
+    if (!confirmed) return;
     this.saving = true;
     this.api.updateCompany(this.company.id, this.draft).subscribe({
       next: () => {
@@ -51,13 +59,20 @@ export class CompanyDetailsPageComponent {
         this.editing = false;
         this.saving = false;
         this.notice = 'Company details updated.';
+        void this.modal.success('The company details were updated successfully.');
       },
       error: () => { this.error = 'The company could not be updated.'; this.saving = false; }
     });
   }
 
-  delete(): void {
-    if (!this.company || !window.confirm(`Delete ${this.company.name} and all employees?`)) return;
+  async delete(): Promise<void> {
+    if (!this.company) return;
+    const confirmed = await this.modal.confirm({
+      title: `Delete ${this.company.name}?`,
+      message: 'This will permanently delete the company and all employees assigned to it.',
+      confirmLabel: 'Delete company'
+    });
+    if (!confirmed) return;
     this.saving = true;
     this.api.deleteCompany(this.company.id).subscribe({
       next: () => window.location.assign('/companies'),

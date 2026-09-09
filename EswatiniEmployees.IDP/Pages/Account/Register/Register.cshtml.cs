@@ -89,12 +89,12 @@ namespace EswatiniEmployees.IDP.Pages.Account.Register
 
         private string SafeReturnUrl(string returnUrl)
         {
-            if (!Uri.TryCreate(returnUrl, UriKind.Absolute, out var uri))
-                return "/";
-
             var configuredOrigin = HttpContext.RequestServices
                 .GetRequiredService<IConfiguration>()
                 ["Authentication:Angular:ClientOrigin"];
+
+            if (!Uri.TryCreate(returnUrl, UriKind.Absolute, out var uri))
+                return ClientHomeUrl(configuredOrigin);
 
             var defaultOrigins = new[] { "http://localhost:4200", "https://localhost:4200" };
             var isAllowed = (configuredOrigin is not null && uri.GetLeftPart(UriPartial.Authority).TrimEnd('/') == configuredOrigin.TrimEnd('/'))
@@ -102,7 +102,14 @@ namespace EswatiniEmployees.IDP.Pages.Account.Register
 
             return isAllowed && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
                 ? uri.ToString()
-                : "/";
+                : ClientHomeUrl(configuredOrigin);
+        }
+
+        private static string ClientHomeUrl(string configuredOrigin)
+        {
+            return !string.IsNullOrWhiteSpace(configuredOrigin)
+                ? $"{configuredOrigin.TrimEnd('/')}/"
+                : "http://localhost:4200/";
         }
 
     }

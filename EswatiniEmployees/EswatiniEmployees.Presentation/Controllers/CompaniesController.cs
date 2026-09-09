@@ -23,6 +23,7 @@ public class CompaniesController : ControllerBase
 		return Ok(companies);
 	}
 
+	[Authorize]
 	[HttpGet("{id:guid}", Name = "CompanyById")]
 	public async Task<IActionResult> GetCompany(Guid id)
 	{
@@ -30,6 +31,7 @@ public class CompaniesController : ControllerBase
 		return Ok(company);
 	}
 
+	[Authorize]
 	[HttpGet("collection/({ids})", Name = "CompanyCollection")]
 	public async Task<IActionResult> GetCompanyCollection
 		([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
@@ -39,6 +41,7 @@ public class CompaniesController : ControllerBase
 		return Ok(companies);
 	}
 
+	[Authorize]
 	[HttpPost]
 	public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
 	{
@@ -53,6 +56,7 @@ public class CompaniesController : ControllerBase
 		return CreatedAtRoute("CompanyById", new { id = createdCompany.Id }, createdCompany);
 	}
 
+     [Authorize(Roles = "Administrator")]
 	[HttpPost("collection")]
 	public async Task<IActionResult> CreateCompanyCollection
 		([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
@@ -61,7 +65,7 @@ public class CompaniesController : ControllerBase
 
 		return CreatedAtRoute("CompanyCollection", new { result.ids }, result.companies);
 	}
-
+     [Authorize(Roles = "Administrator")]
 	[HttpDelete("{id:guid}")]
 	public async Task<IActionResult> DeleteCompany(Guid id)
 	{
@@ -70,6 +74,7 @@ public class CompaniesController : ControllerBase
 		return NoContent();
 	}
 
+     [Authorize]
 	[HttpPut("{id:guid}")]
 	public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
 	{

@@ -2,15 +2,17 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.6.
 
-## Development server
+## Local development
 
 To start a local development server, run:
 
 ```bash
-ng serve
+npm run start:local
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+
+All Angular configurations use the local API at `https://localhost:5001/api` and IdentityServer at `https://localhost:5005`.
 
 ## Code scaffolding
 
@@ -28,13 +30,19 @@ ng generate --help
 
 ## Building
 
-To build the project run:
+To build the project for local testing, run:
 
 ```bash
-ng build
+npm run build:local
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+To create the optimized publication build, run:
+
+```bash
+npm run build:production
+```
+
+Both commands store the build artifacts in the `dist/` directory and use the local API and IdentityServer URLs.
 
 ## Running unit tests
 

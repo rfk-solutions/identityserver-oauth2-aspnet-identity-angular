@@ -24,7 +24,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.ConfigureAuthenticationHandler();
+builder.Services.ConfigureAuthenticationHandler(builder.Configuration);
 
 builder.Services.AddControllers(config =>
 {
@@ -37,6 +37,11 @@ builder.Services.AddControllers(config =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetRequiredService<Repository.RepositoryContext>().Database.EnsureCreated();
+}
+
 //var logger = app.Services.GetRequiredService<ILoggerManager>();
 //app.ConfigureExceptionHandler(logger);
 app.UseExceptionHandler(opt => { });
@@ -45,7 +50,6 @@ if (app.Environment.IsProduction())
     app.UseHsts();
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
@@ -55,8 +59,12 @@ app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseDefaultFiles();
+// 1. Default Static Files (Serves Angular/CSS/JS from wwwroot)
+app.UseStaticFiles();
 
 app.MapControllers();
+app.MapFallbackToController("Index", "Fallback");
 
 app.Run();
 

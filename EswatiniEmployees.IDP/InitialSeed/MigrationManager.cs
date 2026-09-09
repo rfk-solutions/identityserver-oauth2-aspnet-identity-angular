@@ -11,18 +11,24 @@ public static class MigrationManager
 		using (var scope = app.Services.CreateScope())
 		{
 			scope.ServiceProvider
+				.GetRequiredService<Entities.UserContext>()
+				.Database
+				.EnsureCreated();
+
+			scope.ServiceProvider
 				.GetRequiredService<PersistedGrantDbContext>()
 				.Database
-				.Migrate();
+				.EnsureCreated();
 
 			using (var context = scope.ServiceProvider
 				.GetRequiredService<ConfigurationDbContext>())
 			{
 				try
 				{
-					context.Database.Migrate();
+					context.Database.EnsureCreated();
+					var clientOrigin = app.Configuration["Authentication:Angular:ClientOrigin"] ?? "http://localhost:4200";
 
-					foreach (var client in Config.Clients)
+					foreach (var client in Config.Clients(clientOrigin))
 					{
 						var existingClient = context.Clients
 							.Include(item => item.AllowedCorsOrigins)
@@ -36,6 +42,7 @@ public static class MigrationManager
 						}
 						else
 						{
+							existingClient.ClientUri = client.ClientUri;
 							existingClient.RedirectUris.Clear();
 							foreach (var redirectUri in client.RedirectUris)
 							{
